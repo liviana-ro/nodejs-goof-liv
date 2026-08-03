@@ -24,7 +24,7 @@ var dust = require('dustjs-linkedin');
 var dustHelpers = require('dustjs-helpers');
 var cons = require('consolidate');
 const hbs = require('hbs')
-
+const { exec } = require('child_process');
 var app = express();
 var routes = require('./routes');
 var routesUsers = require('./routes/users.js')
@@ -66,6 +66,14 @@ app.get('/about_new', routes.about_new);
 app.get('/chat', routes.chat.get);
 app.put('/chat', routes.chat.add);
 app.delete('/chat', routes.chat.delete);
+// DEMO: OS Command Injection - user input flows into a shell command
+   app.get('/ping', function (req, res) {
+     var host = req.query.host;
+     exec('ping -c 1 ' + host, function (err, stdout, stderr) {
+       if (err) { return res.status(500).send(stderr); }
+       res.send('<pre>' + stdout + '</pre>');
+     });
+   });
 app.use('/users', routesUsers)
 
 // Static
